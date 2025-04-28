@@ -1,5 +1,6 @@
 import { PostsService } from './posts.service';
-interface Post {
+interface PostModel {
+    id: number;
     author: string;
     title: string;
     content: string;
@@ -9,6 +10,10 @@ interface Post {
 export declare class PostsController {
     private readonly postsService;
     constructor(postsService: PostsService);
-    getPost(): Post;
+    getPosts(): PostModel[];
+    getPost(id: string): PostModel;
+    postPosts(author: string, title: string, content: string): PostModel;
+    patchPost(id: string, author?: string, title?: string, content?: string): PostModel;
+    deletePost(id: string): string;
 }
 export {};
