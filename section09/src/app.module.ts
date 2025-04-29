@@ -2,9 +2,28 @@ import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { PostsModule } from './posts/posts.module';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import * as process from 'node:process';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
-  imports: [PostsModule],
+  imports: [
+    ConfigModule.forRoot({
+      isGlobal: true,
+    }),
+    PostsModule,
+    TypeOrmModule.forRoot({
+      // 데이터베이스 타입
+      type: 'postgres',
+      host: '127.0.0.1',
+      port: parseInt(process.env.DB_PORT),
+      username: `${process.env.DB_USER}`,
+      password: `${process.env.DB_PASS}`,
+      database: `${process.env.DB_DB}`,
+      entities: [],
+      synchronize: true,
+    }),
+  ],
   controllers: [AppController],
   providers: [AppService],
 })
