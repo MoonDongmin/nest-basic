@@ -14,6 +14,7 @@ const posts_module_1 = require("./posts/posts.module");
 const typeorm_1 = require("@nestjs/typeorm");
 const process = require("node:process");
 const config_1 = require("@nestjs/config");
+const posts_entity_1 = require("./posts/entities/posts.entity");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -31,7 +32,7 @@ exports.AppModule = AppModule = __decorate([
                 username: `${process.env.DB_USER}`,
                 password: `${process.env.DB_PASS}`,
                 database: `${process.env.DB_DB}`,
-                entities: [],
+                entities: [posts_entity_1.PostsModel],
                 synchronize: true,
             }),
         ],

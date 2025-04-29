@@ -5,6 +5,7 @@ import { PostsModule } from './posts/posts.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import * as process from 'node:process';
 import { ConfigModule } from '@nestjs/config';
+import { PostsModel } from './posts/entities/posts.entity';
 
 @Module({
   imports: [
@@ -20,7 +21,7 @@ import { ConfigModule } from '@nestjs/config';
       username: `${process.env.DB_USER}`,
       password: `${process.env.DB_PASS}`,
       database: `${process.env.DB_DB}`,
-      entities: [],
+      entities: [PostsModel],
       synchronize: true,
     }),
   ],
