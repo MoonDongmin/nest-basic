@@ -1,0 +1,15 @@
+services:
+  postgres: # postgres라는 것은 이미지 이름이 아니라 우리가 지어주는 이름임.
+    image: postgres:15 # 어떤 이미지를 쓸지를 적어주면 됨. 버전은 : 뒤에 붙이면됨.
+    restart: always # 실행을 할 때마다 재시작을 해라
+    volumes: # 도커 이미지안의 파일들이 그대로 유지할 수 있는 것
+      - ./postgres-data:/var/lib/postgresql/data # 이 폴더와 postgres 이미지 안에 있는 폴더를 연동시켜줌
+      # 콜론을 기준으로 왼쪽은 우리 폴더 위치 / 오른쪽은 도커 이미지 안에 존재하는 위치
+    ports: # 이미지 상의 포트와 우리 host의 포트를 매핑시켜줌
+      - "15432:5432" # -> 호스트의 5432 포트와 이미지 속의 5432 포트를 연동시키는 것
+    environment: # 데이터베이스의 정보를 넣어줄 수 있음
+      POSTGRES_USER: postgres # 이미지를 띄웠을 때 기본 사용자 이름
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: nest_basic
+
+
