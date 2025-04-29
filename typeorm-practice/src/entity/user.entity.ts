@@ -10,6 +10,11 @@ import {
 } from 'typeorm';
 import { Version } from '@nestjs/common';
 
+export enum Role {
+  USER = 'user',
+  ADMIN = 'admin',
+}
+
 @Entity()
 export class UserModel {
   // 자동으로 아이디를 생성함
@@ -58,6 +63,13 @@ export class UserModel {
     unique: false,
   })
   title: string;
+
+  @Column({
+    type: 'enum',
+    enum: Role,
+    default: Role.USER,
+  })
+  role: Role;
 
   // 데이터가 생성되는 날짜의 시간이 자동으로 찍힘
   @CreateDateColumn()
