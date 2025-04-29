@@ -19,10 +19,10 @@ let PostsController = class PostsController {
     constructor(postsService) {
         this.postsService = postsService;
     }
-    getPosts() {
+    async getPosts() {
         return this.postsService.getAllPosts();
     }
-    getPost(id) {
+    async getPost(id) {
         return this.postsService.getPostById(+id);
     }
     postPosts(author, title, content) {
@@ -40,14 +40,14 @@ __decorate([
     (0, common_1.Get)(),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
-    __metadata("design:returntype", Array)
+    __metadata("design:returntype", Promise)
 ], PostsController.prototype, "getPosts", null);
 __decorate([
     (0, common_1.Get)(':id'),
     __param(0, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", Object)
+    __metadata("design:returntype", Promise)
 ], PostsController.prototype, "getPost", null);
 __decorate([
     (0, common_1.Post)(),

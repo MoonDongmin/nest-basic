@@ -1,3 +1,5 @@
+import { Repository } from 'typeorm';
+import { PostsModel } from './entities/posts.entity';
 export interface PostModel {
     id: number;
     author: string;
@@ -7,9 +9,11 @@ export interface PostModel {
     commentCount: number;
 }
 export declare class PostsService {
-    getAllPosts(): PostModel[];
-    getPostById(id: number): PostModel;
-    createPost(author: string, title: string, content: string): PostModel;
-    updatePost(postId: number, author: string, title: string, content: string): PostModel;
-    deletePost(postId: number): number;
+    private readonly postsRepository;
+    constructor(postsRepository: Repository<PostsModel>);
+    getAllPosts(): Promise<PostsModel[]>;
+    getPostById(id: number): Promise<PostsModel>;
+    createPost(author: string, title: string, content: string): Promise<PostsModel>;
+    updatePost(postId: number, author: string, title: string, content: string): Promise<PostsModel>;
+    deletePost(postId: number): Promise<number>;
 }

@@ -55,34 +55,53 @@ export class PostsService {
     private readonly postsRepository: Repository<PostsModel>,
   ) {}
 
-  getAllPosts() {
-    return posts;
+  async getAllPosts() {
+    return this.postsRepository.find();
   }
 
-  getPostById(id: number) {
-    const post = posts.find((post) => post.id === +id);
+  async getPostById(id: number) {
+    const post = await this.postsRepository.findOne({
+      where: {
+        id,
+      },
+    });
+
     if (!post) {
       throw new NotFoundException();
     }
     return post;
   }
 
-  createPost(author: string, title: string, content: string) {
-    const post: PostModel = {
-      id: posts[posts.length - 1].id + 1,
+  async createPost(author: string, title: string, content: string) {
+    // 1. create -> 저장할 객체를 생성한다.
+    // 2. save -> 객체를 저장한다. (create 메서드에서 생성한 객체로)
+
+    const post = this.postsRepository.create({
       author,
       title,
       content,
       likeCount: 0,
       commentCount: 0,
-    };
+    });
 
-    posts = [...posts, post];
-    return post;
+    const newPost = await this.postsRepository.save(post);
+
+    return newPost;
   }
 
-  updatePost(postId: number, author: string, title: string, content: string) {
-    const post = posts.find((post) => post.id === postId);
+  async updatePost(
+    postId: number,
+    author: string,
+    title: string,
+    content: string,
+  ) {
+    // save의 기능
+    // 1. 만약 데이터가 존재하지 않는다면 (id 기준으로) 새로 생성한다
+    // 2. 만약 데이터가 존재한다면 (같은 id의 값이 존재한다면) 존재하던 값을 업데이트 함
+
+    const post = await this.postsRepository.findOne({
+      where: { id: postId },
+    });
 
     if (!post) {
       throw new NotFoundException();
@@ -100,13 +119,22 @@ export class PostsService {
       post.content = content;
     }
 
-    posts = posts.map((prevPost) => (prevPost.id === postId ? post : prevPost));
-
-    return post;
+    const newPost = await this.postsRepository.save(post);
+    return newPost;
   }
 
-  deletePost(postId: number) {
-    posts = posts.filter((post) => post.id !== postId);
+  async deletePost(postId: number) {
+    const post = await this.postsRepository.findOne({
+      where: {
+        id: postId,
+      },
+    });
+
+    if (!post) {
+      throw new NotFoundException();
+    }
+
+    await this.postsRepository.delete(postId);
 
     return postId;
   }

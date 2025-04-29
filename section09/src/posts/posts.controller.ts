@@ -16,7 +16,7 @@ export class PostsController {
   // 1) GET /posts
   // 모든 post를 다 가져옴
   @Get()
-  getPosts(): PostModel[] {
+  async getPosts() {
     return this.postsService.getAllPosts();
   }
 
@@ -24,7 +24,7 @@ export class PostsController {
   // id에 해당되는 post를 가져옴
   // 예를 들어서 id = 1일 경우 id가 1인 프로스트를 가져옴
   @Get(':id')
-  getPost(@Param('id') id: string): PostModel {
+  async getPost(@Param('id') id: string) {
     return this.postsService.getPostById(+id);
   }
 
