@@ -3,12 +3,14 @@ import {
   CreateDateColumn,
   Entity,
   Generated,
+  OneToOne,
   PrimaryColumn,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
   VersionColumn,
 } from 'typeorm';
 import { Version } from '@nestjs/common';
+import { ProfileModel } from './profile.entity';
 
 export enum Role {
   USER = 'user',
@@ -30,6 +32,9 @@ export class UserModel {
 
   @PrimaryGeneratedColumn()
   id: number;
+
+  @Column()
+  email: string;
 
   @Column({
     // 데이터베이스에서 인진하는 컬럼 타입
@@ -88,4 +93,7 @@ export class UserModel {
   @Column()
   @Generated('uuid')
   additionalId: string;
+
+  @OneToOne(() => ProfileModel, (profile) => profile.user)
+  profile: ProfileModel;
 }
