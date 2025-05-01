@@ -3,6 +3,7 @@ import {
   CreateDateColumn,
   Entity,
   Generated,
+  OneToMany,
   OneToOne,
   PrimaryColumn,
   PrimaryGeneratedColumn,
@@ -11,6 +12,7 @@ import {
 } from 'typeorm';
 import { Version } from '@nestjs/common';
 import { ProfileModel } from './profile.entity';
+import { PostModel } from './post.entity';
 
 export enum Role {
   USER = 'user',
@@ -96,4 +98,7 @@ export class UserModel {
 
   @OneToOne(() => ProfileModel, (profile) => profile.user)
   profile: ProfileModel;
+
+  @OneToMany(() => PostModel, (post) => post.author)
+  posts: PostModel[];
 }
