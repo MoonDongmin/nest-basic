@@ -61,9 +61,11 @@ let PostsService = class PostsService {
         }
         return post;
     }
-    async createPost(author, title, content) {
+    async createPost(authorId, title, content) {
         const post = this.postsRepository.create({
-            author,
+            author: {
+                id: authorId,
+            },
             title,
             content,
             likeCount: 0,
@@ -72,15 +74,12 @@ let PostsService = class PostsService {
         const newPost = await this.postsRepository.save(post);
         return newPost;
     }
-    async updatePost(postId, author, title, content) {
+    async updatePost(postId, title, content) {
         const post = await this.postsRepository.findOne({
             where: { id: postId },
         });
         if (!post) {
             throw new common_1.NotFoundException();
-        }
-        if (author) {
-            post.author = author;
         }
         if (title) {
             post.title = title;

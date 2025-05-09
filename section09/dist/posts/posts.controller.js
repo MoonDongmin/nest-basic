@@ -25,11 +25,11 @@ let PostsController = class PostsController {
     async getPost(id) {
         return this.postsService.getPostById(+id);
     }
-    postPosts(author, title, content) {
-        return this.postsService.createPost(author, title, content);
+    postPosts(authorId, title, content) {
+        return this.postsService.createPost(authorId, title, content);
     }
-    patchPost(id, author, title, content) {
-        return this.postsService.updatePost(+id, author, title, content);
+    patchPost(id, title, content) {
+        return this.postsService.updatePost(+id, title, content);
     }
     deletePost(id) {
         return this.postsService.deletePost(+id);
@@ -51,21 +51,20 @@ __decorate([
 ], PostsController.prototype, "getPost", null);
 __decorate([
     (0, common_1.Post)(),
-    __param(0, (0, common_1.Body)('author')),
+    __param(0, (0, common_1.Body)('authorId')),
     __param(1, (0, common_1.Body)('title')),
     __param(2, (0, common_1.Body)('content')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, String, String]),
+    __metadata("design:paramtypes", [Number, String, String]),
     __metadata("design:returntype", void 0)
 ], PostsController.prototype, "postPosts", null);
 __decorate([
     (0, common_1.Patch)(':id'),
     __param(0, (0, common_1.Param)('id')),
-    __param(1, (0, common_1.Body)('author')),
-    __param(2, (0, common_1.Body)('title')),
-    __param(3, (0, common_1.Body)('content')),
+    __param(1, (0, common_1.Body)('title')),
+    __param(2, (0, common_1.Body)('content')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, String, String, String]),
+    __metadata("design:paramtypes", [String, String, String]),
     __metadata("design:returntype", void 0)
 ], PostsController.prototype, "patchPost", null);
 __decorate([

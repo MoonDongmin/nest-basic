@@ -1,6 +1,7 @@
+import { UsersModel } from '../../users/entities/users.entity';
 export declare class PostsModel {
     id: number;
-    author: string;
+    author: UsersModel;
     title: string;
     content: string;
     likeCount: number;

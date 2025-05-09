@@ -13,7 +13,7 @@ export declare class PostsService {
     constructor(postsRepository: Repository<PostsModel>);
     getAllPosts(): Promise<PostsModel[]>;
     getPostById(id: number): Promise<PostsModel>;
-    createPost(author: string, title: string, content: string): Promise<PostsModel>;
-    updatePost(postId: number, author: string, title: string, content: string): Promise<PostsModel>;
+    createPost(authorId: number, title: string, content: string): Promise<PostsModel>;
+    updatePost(postId: number, title: string, content: string): Promise<PostsModel>;
     deletePost(postId: number): Promise<number>;
 }

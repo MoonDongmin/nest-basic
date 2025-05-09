@@ -1,8 +1,5 @@
-import {
-  Column,
-  Entity,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
+import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { UsersModel } from '../../users/entities/users.entity';
 
 @Entity()
 export class PostsModel {
@@ -10,8 +7,12 @@ export class PostsModel {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
-  author: string;
+  // 1) UsersModel과 연동함. Foreign Key를 이용해서
+  // 2) null이 될 수 없음
+  @ManyToOne(() => UsersModel, (user) => user.posts, {
+    nullable: false,
+  })
+  author: UsersModel;
 
   @Column()
   title: string;
