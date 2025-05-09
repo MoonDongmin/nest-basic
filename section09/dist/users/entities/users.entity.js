@@ -11,11 +11,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.UsersModel = void 0;
 const typeorm_1 = require("typeorm");
-var RolesEnum;
-(function (RolesEnum) {
-    RolesEnum["USER"] = "USER";
-    RolesEnum["ADMIN"] = "ADMIN";
-})(RolesEnum || (RolesEnum = {}));
+const roles_const_1 = require("../const/roles.const");
 let UsersModel = class UsersModel {
 };
 exports.UsersModel = UsersModel;
@@ -24,17 +20,29 @@ __decorate([
     __metadata("design:type", Number)
 ], UsersModel.prototype, "id", void 0);
 __decorate([
-    (0, typeorm_1.Column)(),
+    (0, typeorm_1.Column)({
+        length: 20,
+        unique: true,
+    }),
     __metadata("design:type", String)
 ], UsersModel.prototype, "nickname", void 0);
 __decorate([
-    (0, typeorm_1.Column)(),
+    (0, typeorm_1.Column)({
+        unique: true,
+    }),
     __metadata("design:type", String)
 ], UsersModel.prototype, "email", void 0);
 __decorate([
     (0, typeorm_1.Column)(),
     __metadata("design:type", String)
 ], UsersModel.prototype, "password", void 0);
+__decorate([
+    (0, typeorm_1.Column)({
+        enum: Object.values(roles_const_1.RolesEnum),
+        default: roles_const_1.RolesEnum.USER,
+    }),
+    __metadata("design:type", String)
+], UsersModel.prototype, "role", void 0);
 exports.UsersModel = UsersModel = __decorate([
     (0, typeorm_1.Entity)()
 ], UsersModel);
