@@ -15,6 +15,8 @@ const typeorm_1 = require("@nestjs/typeorm");
 const process = require("node:process");
 const config_1 = require("@nestjs/config");
 const posts_entity_1 = require("./posts/entities/posts.entity");
+const users_module_1 = require("./users/users.module");
+const users_entity_1 = require("./users/entities/users.entity");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -32,9 +34,10 @@ exports.AppModule = AppModule = __decorate([
                 username: `${process.env.DB_USER}`,
                 password: `${process.env.DB_PASS}`,
                 database: `${process.env.DB_DB}`,
-                entities: [posts_entity_1.PostsModel],
+                entities: [posts_entity_1.PostsModel, users_entity_1.UsersModel],
                 synchronize: true,
             }),
+            users_module_1.UsersModule,
         ],
         controllers: [app_controller_1.AppController],
         providers: [app_service_1.AppService],
