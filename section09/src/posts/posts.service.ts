@@ -56,7 +56,9 @@ export class PostsService {
   ) {}
 
   async getAllPosts() {
-    return this.postsRepository.find();
+    return this.postsRepository.find({
+      relations: ['author'],
+    });
   }
 
   async getPostById(id: number) {
@@ -64,6 +66,7 @@ export class PostsService {
       where: {
         id,
       },
+      relations: ['author'],
     });
 
     if (!post) {
@@ -91,11 +94,7 @@ export class PostsService {
     return newPost;
   }
 
-  async updatePost(
-    postId: number,
-    title: string,
-    content: string,
-  ) {
+  async updatePost(postId: number, title: string, content: string) {
     // save의 기능
     // 1. 만약 데이터가 존재하지 않는다면 (id 기준으로) 새로 생성한다
     // 2. 만약 데이터가 존재한다면 (같은 id의 값이 존재한다면) 존재하던 값을 업데이트 함

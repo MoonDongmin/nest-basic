@@ -48,13 +48,16 @@ let PostsService = class PostsService {
         this.postsRepository = postsRepository;
     }
     async getAllPosts() {
-        return this.postsRepository.find();
+        return this.postsRepository.find({
+            relations: ['author'],
+        });
     }
     async getPostById(id) {
         const post = await this.postsRepository.findOne({
             where: {
                 id,
             },
+            relations: ['author'],
         });
         if (!post) {
             throw new common_1.NotFoundException();
