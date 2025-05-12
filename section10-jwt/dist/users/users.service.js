@@ -33,6 +33,13 @@ let UsersService = class UsersService {
     async getAllUsers() {
         return this.usersRepository.find();
     }
+    async getUserByEmail(email) {
+        return this.usersRepository.findOne({
+            where: {
+                email,
+            },
+        });
+    }
 };
 exports.UsersService = UsersService;
 exports.UsersService = UsersService = __decorate([

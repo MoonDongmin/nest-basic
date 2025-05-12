@@ -1,11 +1,16 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { UsersModel } from '../users/entities/users.entity';
 import { JWT_SECRET } from './const/auth.const';
+import { UsersService } from '../users/users.service';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class AuthService {
-  constructor(private readonly jwtService: JwtService) {}
+  constructor(
+    private readonly jwtService: JwtService,
+    private readonly usersService: UsersService,
+  ) {}
 
   /*
    * 우리가 만드려는 기능
@@ -54,10 +59,32 @@ export class AuthService {
     });
   }
 
-  async loginUser(user: Pick<UsersModel, 'email' | 'id'>) {
+  loginUser(user: Pick<UsersModel, 'email' | 'id'>) {
     return {
       accessToken: this.signToken(user, false),
       refreshToken: this.signToken(user, true),
     };
+  }
+
+  async authenticateWithEmailAndPassword(
+    user: Pick<UsersModel, 'email' | 'password'>,
+  ) {
+    const existingUser = await this.usersService.getUserByEmail(user.email);
+
+    if (!existingUser) {
+      throw new UnauthorizedException('존재하지 않는 사용자입니다.');
+    }
+
+    /*
+     * bcrypt 사용법 - 파라미터
+     *
+     * 1) 입력된 비밀번호
+     * 2) 기존 해시(hash) -> 사용자 정보에 저장돼있는 hash
+     * */
+    const passOk = await bcrypt.compare(user.password, existingUser.password);
+    if (!passOk) {
+      throw new UnauthorizedException('비밀번호가 틀렸습다.');
+    }
+    return existingUser;
   }
 }

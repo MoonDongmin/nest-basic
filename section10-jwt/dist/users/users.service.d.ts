@@ -5,4 +5,5 @@ export declare class UsersService {
     constructor(usersRepository: Repository<UsersModel>);
     createUser(nickname: string, email: string, password: string): Promise<UsersModel>;
     getAllUsers(): Promise<UsersModel[]>;
+    getUserByEmail(email: string): Promise<UsersModel>;
 }
