@@ -21,13 +21,29 @@ let UsersService = class UsersService {
     constructor(usersRepository) {
         this.usersRepository = usersRepository;
     }
-    async createUser(nickname, email, password) {
-        const user = this.usersRepository.create({
-            nickname,
-            email,
-            password,
+    async createUser(user) {
+        const nicknameExists = await this.usersRepository.exists({
+            where: {
+                nickname: user.nickname,
+            },
         });
-        const newUser = await this.usersRepository.save(user);
+        if (nicknameExists) {
+            throw new common_1.BadRequestException('이미 존재하는 nickname 입니다!');
+        }
+        const emailExists = await this.usersRepository.exists({
+            where: {
+                email: user.email,
+            },
+        });
+        if (emailExists) {
+            throw new common_1.BadRequestException('이미 존재하는 email 입니다!');
+        }
+        const userObject = this.usersRepository.create({
+            nickname: user.nickname,
+            email: user.email,
+            password: user.password,
+        });
+        const newUser = await this.usersRepository.save(userObject);
         return newUser;
     }
     async getAllUsers() {

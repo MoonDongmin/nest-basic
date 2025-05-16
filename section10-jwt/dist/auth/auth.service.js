@@ -20,6 +20,44 @@ let AuthService = class AuthService {
         this.jwtService = jwtService;
         this.usersService = usersService;
     }
+    extractTokenFromHeader(header, isBearer) {
+        const splitToken = header.split(' ');
+        const prefix = isBearer ? 'Bearer' : 'Basic';
+        if (splitToken.length !== 2 || splitToken[0] !== prefix) {
+            throw new common_1.UnauthorizedException('잘못된 토큰입니다!');
+        }
+        const token = splitToken[1];
+        return token;
+    }
+    decodeBasicToken(base64String) {
+        const decoded = Buffer.from(base64String, 'base64').toString('utf-8');
+        const split = decoded.split(':');
+        if (split.length !== 2) {
+            throw new common_1.UnauthorizedException('잘못된 유형의 토큰입니다.');
+        }
+        const email = split[0];
+        const password = split[1];
+        return {
+            email,
+            password,
+        };
+    }
+    verifyToken(token) {
+        return this.jwtService.verify(token, {
+            secret: auth_const_1.JWT_SECRET,
+        });
+    }
+    rotateToken(token, isRefreshToken) {
+        const decoded = this.jwtService.verify(token, {
+            secret: auth_const_1.JWT_SECRET,
+        });
+        if (decoded.type !== 'refresh') {
+            throw new common_1.UnauthorizedException('토큰 재발급은 Refresh 토큰으로만 가능합니다.');
+        }
+        return this.signToken({
+            ...decoded,
+        }, isRefreshToken);
+    }
     signToken(user, isRefreshToken) {
         const payload = {
             email: user.email,
@@ -47,6 +85,18 @@ let AuthService = class AuthService {
             throw new common_1.UnauthorizedException('비밀번호가 틀렸습다.');
         }
         return existingUser;
+    }
+    async loginWithEmail(user) {
+        const existingUser = await this.authenticateWithEmailAndPassword(user);
+        return this.loginUser(existingUser);
+    }
+    async registerWithEmail(user) {
+        const hash = await bcrypt.hash(user.password, auth_const_1.HASH_ROUNDS);
+        const newUser = await this.usersService.createUser({
+            ...user,
+            password: hash,
+        });
+        return this.loginUser(newUser);
     }
 };
 exports.AuthService = AuthService;

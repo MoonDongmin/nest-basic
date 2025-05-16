@@ -6,21 +6,21 @@ import e from 'express';
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
-  @Post()
-  postUSer(
-    @Body('nickname') nickname: string,
-    @Body('email') email: string,
-    @Body('password') password: string,
-  ) {
-    return this.usersService.createUser({
-      nickname,
-      email,
-      password,
-    });
-  }
-
   @Get()
   getUsers() {
     return this.usersService.getAllUsers();
   }
+
+  // @Post()
+  // postUSer(
+  //   @Body('nickname') nickname: string,
+  //   @Body('email') email: string,
+  //   @Body('password') password: string,
+  // ) {
+  //   return this.usersService.createUser({
+  //     nickname,
+  //     email,
+  //     password,
+  //   });
+  // }
 }
