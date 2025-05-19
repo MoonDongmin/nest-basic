@@ -1,12 +1,16 @@
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from 'typeorm';
 import { UsersModel } from '../../users/entities/users.entity';
+import { BaseModel } from '../../common/entity/base.entity';
 
 @Entity()
-export class PostsModel {
-  // 이걸 쓰면 PG에서 알아서 자동으로 id 값을 배정을 해줌
-  @PrimaryGeneratedColumn()
-  id: number;
-
+export class PostsModel extends BaseModel {
   // 1) UsersModel과 연동함. Foreign Key를 이용해서
   // 2) null이 될 수 없음
   @ManyToOne(() => UsersModel, (user) => user.posts, {
