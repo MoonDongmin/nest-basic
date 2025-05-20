@@ -6,7 +6,7 @@ import {
 } from '@nestjs/common';
 import { UsersModule } from '../users.module';
 
-export const User = createParamDecorator(
+export const User: any = createParamDecorator(
   (data: keyof UsersModule | undefined, context: ExecutionContext) => {
     const req = context.switchToHttp().getRequest();
 

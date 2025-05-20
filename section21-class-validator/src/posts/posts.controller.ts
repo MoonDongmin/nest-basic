@@ -16,6 +16,7 @@ import { UsersModule } from '../users/users.module';
 import { User } from '../users/decorator/user.decorator';
 import { UsersModel } from '../users/entities/users.entity';
 import { CreatePostDto } from './dto/create-post.dto';
+import { UpdatePostDto } from './dto/update-post.dto';
 
 @Controller('posts')
 export class PostsController {
@@ -41,29 +42,30 @@ export class PostsController {
   @Post()
   @UseGuards(AccessTokenGuard)
   postPosts(
-    @User() user: UsersModel,
+    @User('id') userId: number,
     @Body() body: CreatePostDto,
     // @Body('title') title: string,
     // @Body('content') content: string,
   ) {
-    return this.postsService.createPost(user.id, body);
+    return this.postsService.createPost(userId, body);
   }
 
-  // 4) PUT /posts/:id
+  // 4) Patch /posts/:id
   // id에 해당되는 POST를 변경함
   @Patch(':id')
   patchPost(
     @Param('id', ParseIntPipe) id: number,
-    @Body('title') title?: string,
-    @Body('content') content?: string,
+    @Body() body: UpdatePostDto,
+    // @Body('title') title?: string,
+    // @Body('content') content?: string,
   ) {
-    return this.postsService.updatePost(+id, title, content);
+    return this.postsService.updatePost(id, body);
   }
 
   // 5) DELETE /posts/:id
   // id에 해당되는 POST를 삭제함
   @Delete(':id')
   deletePost(@Param('id', ParseIntPipe) id: number) {
-    return this.postsService.deletePost(+id);
+    return this.postsService.deletePost(id);
   }
 }
