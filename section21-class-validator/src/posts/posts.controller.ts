@@ -15,6 +15,7 @@ import { AccessTokenGuard } from '../auth/guard/bearer-token.guard';
 import { UsersModule } from '../users/users.module';
 import { User } from '../users/decorator/user.decorator';
 import { UsersModel } from '../users/entities/users.entity';
+import { CreatePostDto } from './dto/create-post.dto';
 
 @Controller('posts')
 export class PostsController {
@@ -41,10 +42,11 @@ export class PostsController {
   @UseGuards(AccessTokenGuard)
   postPosts(
     @User() user: UsersModel,
-    @Body('title') title: string,
-    @Body('content') content: string,
+    @Body() body: CreatePostDto,
+    // @Body('title') title: string,
+    // @Body('content') content: string,
   ) {
-    return this.postsService.createPost(user.id, title, content);
+    return this.postsService.createPost(user.id, body);
   }
 
   // 4) PUT /posts/:id

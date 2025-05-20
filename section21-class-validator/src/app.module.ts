@@ -15,6 +15,7 @@ import { CommonModule } from './common/common.module';
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
+      envFilePath: '.env',
     }),
     PostsModule,
     TypeOrmModule.forRoot({
