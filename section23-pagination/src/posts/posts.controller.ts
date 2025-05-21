@@ -33,6 +33,13 @@ export class PostsController {
     return this.postsService.paginatePosts(query);
   }
 
+  @Post('random')
+  @UseGuards(AccessTokenGuard)
+  async postPostRandom(@User() user: UsersModel) {
+    await this.postsService.generatePosts(user.id);
+    return true;
+  }
+
   // 2) GET /posts/:id
   // id에 해당되는 post를 가져옴
   // 예를 들어서 id = 1일 경우 id가 1인 프로스트를 가져옴

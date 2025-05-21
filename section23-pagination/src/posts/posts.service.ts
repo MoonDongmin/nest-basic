@@ -93,6 +93,15 @@ export class PostsService {
     };
   }
 
+  async generatePosts(userId: number) {
+    for (let i = 0; i < 100; i++) {
+      await this.createPost(userId, {
+        title: `임으로 생성된 포스트 제목 ${i}`,
+        content: `임으로 생성된 포스트 내용 ${i}`,
+      });
+    }
+  }
+
   async getPostById(id: number) {
     const post = await this.postsRepository.findOne({
       where: {
