@@ -73,7 +73,7 @@ export class PostsService {
         id: MoreThan(dto.where__id_more_than ?? 0),
       },
       order: {
-        createdAt: dto.oder__created,
+        createdAt: dto.order__created,
       },
       take: dto.take,
     });
@@ -81,7 +81,10 @@ export class PostsService {
     // 해당되는 포스트가 0개 이상이면
     // 마지막 포스트를 가져오고
     // 아니면 null을 반환
-    const lastItem = posts.length > 0 ? posts[posts.length - 1] : null;
+    const lastItem =
+      posts.length > 0 && posts.length === dto.take
+        ? posts[posts.length - 1]
+        : null;
 
     const nextUrl = lastItem && new URL(`${PROTOCOL}://${HOST}/posts`);
 
@@ -95,15 +98,20 @@ export class PostsService {
        * */
       for (const key of Object.keys(dto)) {
         if (dto[key]) {
-          if (key !== 'where__id_more_than') {
+          if (key !== 'where__id_more_than' && key !== 'where__id_less_than') {
             nextUrl.searchParams.append(key, dto[key]);
           }
         }
       }
-      nextUrl.searchParams.append(
-        'where__id_more_than',
-        lastItem.id.toString(),
-      );
+
+      let key = null;
+      if (dto.order__created === 'ASC') {
+        key = 'wher__id_more_than';
+      } else {
+        key = 'where__id_less_than';
+      }
+
+      nextUrl.searchParams.append(key, lastItem.id.toString());
     }
 
     /*
@@ -120,10 +128,10 @@ export class PostsService {
     return {
       data: posts,
       cursor: {
-        after: lastItem?.id,
+        after: lastItem?.id ?? null,
       },
       count: posts.length,
-      next: nextUrl?.toString(),
+      next: nextUrl?.toString() ?? null,
     };
   }
 
