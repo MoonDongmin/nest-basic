@@ -1,7 +1,10 @@
 import { IsIn, IsNumber, IsOptional } from 'class-validator';
-import { Type } from 'class-transformer';
 
 export class PaginatePostDto {
+  @IsNumber()
+  @IsOptional()
+  page?: number;
+
   @IsNumber()
   @IsOptional()
   where__id_less_than?: number;
