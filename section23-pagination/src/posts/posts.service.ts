@@ -75,7 +75,26 @@ export class PostsService {
     }
   }
 
-  async pagePaginatePosts(dto: PaginatePostDto) {}
+  async pagePaginatePosts(dto: PaginatePostDto) {
+    /*
+     * data: Data[],
+     * total: number,
+     *
+     * [1] [2] [3] [4]
+     * */
+    const [posts, count] = await this.postsRepository.findAndCount({
+      skip: dto.take * (dto.page - 1),
+      take: dto.take,
+      order: {
+        createdAt: dto.order__createdAt,
+      },
+    });
+
+    return {
+      data: posts,
+      total: count,
+    };
+  }
 
   async cursorPaginatePosts(dto: PaginatePostDto) {
     const where: FindOptionsWhere<PostsModel> = {};
@@ -90,7 +109,7 @@ export class PostsService {
     const posts = await this.postsRepository.find({
       where,
       order: {
-        createdAt: dto.order__created,
+        createdAt: dto.order__createdAt,
       },
       take: dto.take,
     });
@@ -122,7 +141,7 @@ export class PostsService {
       }
 
       let key = null;
-      if (dto.order__created === 'ASC') {
+      if (dto.order__createdAt === 'ASC') {
         key = 'wher__id_more_than';
       } else {
         key = 'where__id_less_than';
