@@ -7,6 +7,7 @@ import { AuthService } from '../auth/auth.service';
 import { JwtModule } from '@nestjs/jwt';
 import { AuthModule } from '../auth/auth.module';
 import { UsersModule } from '../users/users.module';
+import { CommonModule } from '../common/common.module';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { UsersModule } from '../users/users.module';
     TypeOrmModule.forFeature([PostsModel]),
     AuthModule,
     UsersModule,
+    CommonModule,
   ],
   controllers: [PostsController],
   providers: [PostsService],
