@@ -11,6 +11,8 @@ import { UsersModel } from './users/entities/users.entity';
 import { AuthModule } from './auth/auth.module';
 import { CommonModule } from './common/common.module';
 import { APP_INTERCEPTOR } from '@nestjs/core';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { PUBLIC_FOLDER_PATH } from './common/const/path.const';
 
 @Module({
   imports: [
@@ -19,6 +21,13 @@ import { APP_INTERCEPTOR } from '@nestjs/core';
       envFilePath: '.env',
     }),
     PostsModule,
+    ServeStaticModule.forRoot({
+      // uuid.jpg
+      // http://localhost:3000/public/posts/uuid.jpg
+      // http://localhost:3000/posts/uuid.jpg
+      rootPath: PUBLIC_FOLDER_PATH,
+      serveRoot: '/public',
+    }),
     TypeOrmModule.forRoot({
       // 데이터베이스 타입
       type: 'postgres',
