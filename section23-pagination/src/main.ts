@@ -14,6 +14,8 @@ async function bootstrap() {
         // 자동으로 number로 변환을 해줌
         enableImplicitConversion: true,
       },
+      whitelist: true,
+      forbidNonWhitelisted: true,
     }),
   );
   await app.listen(3000);
