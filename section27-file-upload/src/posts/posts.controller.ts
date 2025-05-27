@@ -54,15 +54,13 @@ export class PostsController {
   // POST를 생성함
   @Post()
   @UseGuards(AccessTokenGuard)
-  @UseInterceptors(FileInterceptor('image'))
   postPosts(
     @User('id') userId: number,
     @Body() body: CreatePostDto,
-    @UploadedFile() file?: Express.Multer.File,
     // @Body('title') title: string,
     // @Body('content') content: string,
   ) {
-    return this.postsService.createPost(userId, body, file?.filename);
+    return this.postsService.createPost(userId, body);
   }
 
   // 4) Patch /posts/:id
