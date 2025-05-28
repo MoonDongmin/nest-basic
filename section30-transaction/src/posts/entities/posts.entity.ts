@@ -3,6 +3,7 @@ import {
   CreateDateColumn,
   Entity,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -13,11 +14,13 @@ import { stringValidationMessage } from '../../common/validation-message/string-
 import { Transform } from 'class-transformer';
 import { join } from 'path';
 import { POST_PUBLIC_IMAGE_PATH } from '../../common/const/path.const';
+import { ImageModel, ImageModelType } from './image.entity';
 
 @Entity()
 export class PostsModel extends BaseModel {
   // 1) UsersModel과 연동함. Foreign Key를 이용해서
   // 2) null이 될 수 없음
+  //
   @ManyToOne(() => UsersModel, (user) => user.posts, {
     nullable: false,
   })
@@ -35,15 +38,12 @@ export class PostsModel extends BaseModel {
   })
   content: string;
 
-  @Column({
-    nullable: true,
-  })
-  @Transform(({ value }) => value && `/${join(POST_PUBLIC_IMAGE_PATH, value)}`)
-  image?: string;
-
   @Column()
   likeCount: number;
 
   @Column()
   commentCount: number;
+
+  @OneToMany((type) => ImageModel, (image) => image.post)
+  images: ImageModel[];
 }
