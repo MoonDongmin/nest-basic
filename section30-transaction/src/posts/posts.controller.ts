@@ -13,6 +13,7 @@ import {
   ClassSerializerInterceptor,
   Query,
   UploadedFile,
+  InternalServerErrorException,
 } from '@nestjs/common';
 import { PostsService } from './posts.service';
 import { AccessTokenGuard } from '../auth/guard/bearer-token.guard';
@@ -25,12 +26,14 @@ import { PaginatePostDto } from './dto/paginate-post.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ImageModelType } from './entities/image.entity';
 import { DataSource } from 'typeorm';
+import { PostImagesService } from './image/images.service';
 
 @Controller('posts')
 export class PostsController {
   constructor(
     private readonly postsService: PostsService,
     private readonly dataSource: DataSource,
+    private readonly postImagesService: PostImagesService,
   ) {}
 
   // 1) GET /posts
@@ -79,14 +82,17 @@ export class PostsController {
     // 로직 실행
 
     try {
-      const post = await this.postsService.createPost(userId, body);
+      const post = await this.postsService.createPost(userId, body, qr);
       for (let i = 0; i < body.images.length; i++) {
-        await this.postsService.createPostImage({
-          post,
-          order: i,
-          path: body.images[i],
-          type: ImageModelType.POST_IMAGE,
-        });
+        await this.postImagesService.createPostImage(
+          {
+            post,
+            order: i,
+            path: body.images[i],
+            type: ImageModelType.POST_IMAGE,
+          },
+          qr,
+        );
       }
       await qr.commitTransaction();
       await qr.release();
@@ -97,6 +103,7 @@ export class PostsController {
       // 트랜잭션을 종료하고 원래 상태로 되돌린다.
       await qr.rollbackTransaction();
       await qr.release();
+      throw new InternalServerErrorException('에러가 났습니다.');
     }
   }
 
