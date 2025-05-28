@@ -19,6 +19,9 @@ import {
   TEMP_FOLDER_PATH,
 } from '../common/const/path.const';
 import { promises } from 'fs';
+import { CreatePostImageDto } from './image/dto/create-image.dto';
+import { ImageModel } from './entities/image.entity';
+import { DEFAULT_POST_FIND_OPTIONS } from './const/default-post-find-options.const';
 
 /**
  * author: string;
@@ -28,42 +31,6 @@ import { promises } from 'fs';
  * commentCount: number;
  */
 
-export interface PostModel {
-  id: number;
-  author: string;
-  title: string;
-  content: string;
-  likeCount: number;
-  commentCount: number;
-}
-
-let posts: PostModel[] = [
-  {
-    id: 1,
-    author: 'newjeans_official',
-    title: '뉴진스 민지',
-    content: '메이크업 고치고 있는 민지',
-    likeCount: 100000,
-    commentCount: 99999,
-  },
-  {
-    id: 2,
-    author: 'newjeans_official',
-    title: '뉴진스 해린',
-    content: '노래 연습하고 있는 민지',
-    likeCount: 100000,
-    commentCount: 99999,
-  },
-  {
-    id: 3,
-    author: 'blackpink_official',
-    title: '블랙핑크 로제',
-    content: '공연하고 있는 로제',
-    likeCount: 100000,
-    commentCount: 99999,
-  },
-];
-
 @Injectable()
 export class PostsService {
   constructor(
@@ -72,11 +39,13 @@ export class PostsService {
     private readonly postsRepository: Repository<PostsModel>,
     private readonly commonService: CommonService,
     private readonly configService: ConfigService,
+    @InjectRepository(ImageModel)
+    private readonly imageRepository: Repository<ImageModel>,
   ) {}
 
   async getAllPosts() {
     return this.postsRepository.find({
-      relations: ['author'],
+      ...DEFAULT_POST_FIND_OPTIONS,
     });
   }
 
@@ -86,7 +55,9 @@ export class PostsService {
     return this.commonService.paginate(
       dto,
       this.postsRepository,
-      { relations: ['author'] },
+      {
+        ...DEFAULT_POST_FIND_OPTIONS,
+      },
       'posts',
     );
     // if (dto.page) {
@@ -200,16 +171,17 @@ export class PostsService {
       await this.createPost(userId, {
         title: `임으로 생성된 포스트 제목 ${i}`,
         content: `임으로 생성된 포스트 내용 ${i}`,
+        images: [],
       });
     }
   }
 
   async getPostById(id: number) {
     const post = await this.postsRepository.findOne({
+      ...DEFAULT_POST_FIND_OPTIONS,
       where: {
         id,
       },
-      relations: ['author'],
     });
 
     if (!post) {
@@ -218,9 +190,9 @@ export class PostsService {
     return post;
   }
 
-  async createPostImage(dto: CreatePostDto) {
+  async createPostImage(dto: CreatePostImageDto) {
     // dto의 이미지 이름을 기반으로 파일의 경로를 생성한다.
-    const tempFilePath = join(TEMP_FOLDER_PATH, dto.image);
+    const tempFilePath = join(TEMP_FOLDER_PATH, dto.path);
 
     try {
       // 파일이 존재하지 확인
@@ -237,8 +209,15 @@ export class PostsService {
     // {프로젝트경로}/public/posts/asdf.jpg
     const newPath = join(POST_IMAGE_PATH, fileName);
 
+    // save
+    const result = await this.imageRepository.save({
+      ...dto,
+    });
+
+    // 파일 옮기기
     await promises.rename(tempFilePath, newPath);
-    return true;
+
+    return result;
   }
 
   async createPost(authorId: number, postDto: CreatePostDto) {
@@ -250,6 +229,7 @@ export class PostsService {
         id: authorId,
       },
       ...postDto,
+      images: [],
       likeCount: 0,
       commentCount: 0,
     });
