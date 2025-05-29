@@ -27,6 +27,7 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { ImageModelType } from './entities/image.entity';
 import { DataSource } from 'typeorm';
 import { PostImagesService } from './image/images.service';
+import { LogInterceptor } from '../common/interceptor/log.interceptor';
 
 @Controller('posts')
 export class PostsController {
@@ -39,6 +40,7 @@ export class PostsController {
   // 1) GET /posts
   // 모든 post를 다 가져옴
   @Get()
+  @UseInterceptors(LogInterceptor)
   async getPosts(@Query() query: PaginatePostDto) {
     return this.postsService.paginatePosts(query);
   }
