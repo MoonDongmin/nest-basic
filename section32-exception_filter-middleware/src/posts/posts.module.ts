@@ -1,4 +1,9 @@
-import { BadRequestException, Module } from '@nestjs/common';
+import {
+  MiddlewareConsumer,
+  Module,
+  NestModule,
+  RequestMethod,
+} from '@nestjs/common';
 import { PostsService } from './posts.service';
 import { PostsController } from './posts.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -20,4 +25,6 @@ import { PostImagesService } from './image/images.service';
   controllers: [PostsController],
   providers: [PostsService, PostImagesService],
 })
+
+// 미들웨어 적용하기
 export class PostsModule {}

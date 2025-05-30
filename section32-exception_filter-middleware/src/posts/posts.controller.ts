@@ -45,7 +45,7 @@ export class PostsController {
   // 1) GET /posts
   // 모든 post를 다 가져옴
   @Get()
-  @UseInterceptors(LogInterceptor)
+  // @UseInterceptors(LogInterceptor)
   // @UseFilters(HttpExceptionFilter)
   async getPosts(@Query() query: PaginatePostDto) {
     return this.postsService.paginatePosts(query);
