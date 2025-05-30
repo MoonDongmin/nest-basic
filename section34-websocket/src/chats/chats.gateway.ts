@@ -3,8 +3,9 @@ import {
   OnGatewayConnection,
   SubscribeMessage,
   WebSocketGateway,
+  WebSocketServer,
 } from '@nestjs/websockets';
-import { Socket } from 'socket.io';
+import { Server, Socket } from 'socket.io';
 
 // 소켓io가 연결하게 되는 곳을 gateway라고 부름
 @WebSocketGateway({
@@ -12,6 +13,10 @@ import { Socket } from 'socket.io';
   namespace: 'chats',
 })
 export class ChatsGateway implements OnGatewayConnection {
+  // server 변수에 server 객체를 NestJS가 넣어줌
+  @WebSocketServer()
+  server: Server;
+
   handleConnection(socket: Socket) {
     console.log(`on connect called : ${socket.id}`);
   }
@@ -19,6 +24,7 @@ export class ChatsGateway implements OnGatewayConnection {
   // socket.on('send_message', (message)=>{console.log(message)});
   @SubscribeMessage('send_message')
   sendMessage(@MessageBody() message: string) {
-    console.log(message);
+    // 연결된 모든 소켓에게 receive_message 이벤트를 받는 곳에게 다음 메시지를 보내라라는 의미
+    this.server.emit('receive_message', 'hello from server');
   }
 }
