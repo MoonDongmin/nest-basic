@@ -14,6 +14,8 @@ import {
   Query,
   UploadedFile,
   InternalServerErrorException,
+  UseFilters,
+  BadRequestException,
 } from '@nestjs/common';
 import { PostsService } from './posts.service';
 import { AccessTokenGuard } from '../auth/guard/bearer-token.guard';
@@ -30,6 +32,7 @@ import { PostImagesService } from './image/images.service';
 import { LogInterceptor } from '../common/interceptor/log.interceptor';
 import { TransactionInterceptor } from '../common/interceptor/transaction.interceptor';
 import { QueryRunner } from 'src/common/decorator/query-runner.decorator';
+import { HttpExceptionFilter } from '../common/exception-filter/http.exception-filter';
 
 @Controller('posts')
 export class PostsController {
@@ -43,6 +46,7 @@ export class PostsController {
   // 모든 post를 다 가져옴
   @Get()
   @UseInterceptors(LogInterceptor)
+  // @UseFilters(HttpExceptionFilter)
   async getPosts(@Query() query: PaginatePostDto) {
     return this.postsService.paginatePosts(query);
   }
