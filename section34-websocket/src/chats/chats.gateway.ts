@@ -42,9 +42,13 @@ export class ChatsGateway implements OnGatewayConnection {
     @MessageBody() message: { message: string; chatId: number },
     @ConnectedSocket() socket: Socket,
   ) {
-    // 연결된 모든 소켓에게 receive_message 이벤트를 받는 곳에게 다음 메시지를 보내라라는 의미
-    this.server
-      .in(message.chatId.toString())
+    // 나를 제외한 사람들에게 감
+    socket
+      .to(message.chatId.toString())
       .emit('receive_message', message.message);
+    // 연결된 모든 소켓에게 receive_message 이벤트를 받는 곳에게 다음 메시지를 보내라라는 의미
+    // this.server
+    //   .in(message.chatId.toString())
+    //   .emit('receive_message', message.message);
   }
 }
