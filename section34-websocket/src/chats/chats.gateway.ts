@@ -11,6 +11,8 @@ import { Server, Socket } from 'socket.io';
 import { CreateChatDto } from './dto/create-chat.dto';
 import { ChatsService } from './chats.service';
 import { EnterChatDto } from './dto/enter-chat.dto';
+import { CreateMessageDto } from './messages/dto/create-message.dto';
+import { ChatMessagesService } from './messages/messages.service';
 
 // 소켓io가 연결하게 되는 곳을 gateway라고 부름
 @WebSocketGateway({
@@ -18,7 +20,10 @@ import { EnterChatDto } from './dto/enter-chat.dto';
   namespace: 'chats',
 })
 export class ChatsGateway implements OnGatewayConnection {
-  constructor(private readonly chatsService: ChatsService) {}
+  constructor(
+    private readonly chatsService: ChatsService,
+    private readonly messagesService: ChatMessagesService,
+  ) {}
 
   // server 변수에 server 객체를 NestJS가 넣어줌
   @WebSocketServer()
@@ -60,13 +65,22 @@ export class ChatsGateway implements OnGatewayConnection {
 
   // socket.on('send_message', (message)=>{console.log(message)});
   @SubscribeMessage('send_message')
-  sendMessage(
-    @MessageBody() message: { message: string; chatId: number },
+  async sendMessage(
+    @MessageBody() dto: CreateMessageDto,
     @ConnectedSocket() socket: Socket,
   ) {
+    const chatExists = await this.chatsService.checkIfChatExists(dto.chatId);
+
+    if (!chatExists) {
+      throw new WsException(
+        `존재하지 않는 채팅방입니다. Chat ID: ${dto.chatId}`,
+      );
+    }
+    const message = await this.messagesService.createMessage(dto);
+
     // 나를 제외한 사람들에게 감
     socket
-      .to(message.chatId.toString())
+      .to(message.chat.id.toString())
       .emit('receive_message', message.message);
     // 연결된 모든 소켓에게 receive_message 이벤트를 받는 곳에게 다음 메시지를 보내라라는 의미
     // this.server
