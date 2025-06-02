@@ -5,10 +5,12 @@ import {
   SubscribeMessage,
   WebSocketGateway,
   WebSocketServer,
+  WsException,
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 import { CreateChatDto } from './dto/create-chat.dto';
 import { ChatsService } from './chats.service';
+import { EnterChatDto } from './dto/enter-chat.dto';
 
 // 소켓io가 연결하게 되는 곳을 gateway라고 부름
 @WebSocketGateway({
@@ -33,21 +35,27 @@ export class ChatsGateway implements OnGatewayConnection {
     @ConnectedSocket() socket: Socket,
   ) {
     const chat = await this.chatsService.createChat(data);
-
   }
 
   // 채팅방에 들어가게
   @SubscribeMessage('enter_chat')
-  enterChat(
+  async enterChat(
     // 방의 chat ID들을 리스트로 받음
-    @MessageBody() data: number[],
+    @MessageBody() data: EnterChatDto,
     // 이 소켓에 연결된 소켓을 들고옴
     @ConnectedSocket() socket: Socket,
   ) {
-    for (const chatId of data) {
-      // socket.join()
-      socket.join(chatId.toString());
+    for (const chatId of data.chatIds) {
+      const exits = await this.chatsService.checkIfChatExists(chatId);
+      if (!exits) {
+        throw new WsException({
+          code: 100,
+          message: `존재하지 않는 chat 입니다. chatId: ${chatId}`,
+        });
+      }
     }
+    // socket.join()
+    socket.join(data.chatIds.map((x) => x.toString()));
   }
 
   // socket.on('send_message', (message)=>{console.log(message)});
