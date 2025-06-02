@@ -13,6 +13,8 @@ import { ChatsService } from './chats.service';
 import { EnterChatDto } from './dto/enter-chat.dto';
 import { CreateMessageDto } from './messages/dto/create-message.dto';
 import { ChatMessagesService } from './messages/messages.service';
+import { UseFilters, UsePipes, ValidationPipe } from '@nestjs/common';
+import { SocketCatchHttpExceptionFilter } from '../common/exception-filter/socket-catch-http.exception-filter';
 
 // 소켓io가 연결하게 되는 곳을 gateway라고 부름
 @WebSocketGateway({
@@ -34,6 +36,22 @@ export class ChatsGateway implements OnGatewayConnection {
   }
 
   // 챗 방을 만듦
+
+  @UsePipes(
+    new ValidationPipe({
+      // query에 실제로 값을 넣은 적이 없다면 원래 그대로 반환을 해줘야 하는데,
+      // 이를 설정해주면 값을 넣지 않아도 DTO에 넣은 값을 넣은 채로 해줌
+      transform: true,
+      transformOptions: {
+        // class-validator를 기준으로 @IsNumber()로 되어 있으면,
+        // 자동으로 number로 변환을 해줌
+        enableImplicitConversion: true,
+      },
+      whitelist: true,
+      forbidNonWhitelisted: true,
+    }),
+  )
+  @UseFilters(SocketCatchHttpExceptionFilter)
   @SubscribeMessage('create_chat')
   async createChat(
     @MessageBody() data: CreateChatDto,
