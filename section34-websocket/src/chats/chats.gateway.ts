@@ -68,7 +68,23 @@ export class ChatsGateway implements OnGatewayConnection {
   }
 
   // 채팅방에 들어가게
+  @UsePipes(
+    new ValidationPipe({
+      // query에 실제로 값을 넣은 적이 없다면 원래 그대로 반환을 해줘야 하는데,
+      // 이를 설정해주면 값을 넣지 않아도 DTO에 넣은 값을 넣은 채로 해줌
+      transform: true,
+      transformOptions: {
+        // class-validator를 기준으로 @IsNumber()로 되어 있으면,
+        // 자동으로 number로 변환을 해줌
+        enableImplicitConversion: true,
+      },
+      whitelist: true,
+      forbidNonWhitelisted: true,
+    }),
+  )
+  @UseFilters(SocketCatchHttpExceptionFilter)
   @SubscribeMessage('enter_chat')
+  @UseGuards(SocketBearerTokenGuard)
   async enterChat(
     // 방의 chat ID들을 리스트로 받음
     @MessageBody() data: EnterChatDto,
@@ -90,9 +106,24 @@ export class ChatsGateway implements OnGatewayConnection {
 
   // socket.on('send_message', (message)=>{console.log(message)});
   @SubscribeMessage('send_message')
+  @UsePipes(
+    new ValidationPipe({
+      // query에 실제로 값을 넣은 적이 없다면 원래 그대로 반환을 해줘야 하는데,
+      // 이를 설정해주면 값을 넣지 않아도 DTO에 넣은 값을 넣은 채로 해줌
+      transform: true,
+      transformOptions: {
+        // class-validator를 기준으로 @IsNumber()로 되어 있으면,
+        // 자동으로 number로 변환을 해줌
+        enableImplicitConversion: true,
+      },
+      whitelist: true,
+      forbidNonWhitelisted: true,
+    }),
+  )
+  @UseFilters(SocketCatchHttpExceptionFilter)
   async sendMessage(
     @MessageBody() dto: CreateMessageDto,
-    @ConnectedSocket() socket: Socket,
+    @ConnectedSocket() socket: Socket & { user: UsersModel },
   ) {
     const chatExists = await this.chatsService.checkIfChatExists(dto.chatId);
 
@@ -101,7 +132,10 @@ export class ChatsGateway implements OnGatewayConnection {
         `존재하지 않는 채팅방입니다. Chat ID: ${dto.chatId}`,
       );
     }
-    const message = await this.messagesService.createMessage(dto);
+    const message = await this.messagesService.createMessage(
+      dto,
+      socket.user.id,
+    );
 
     // 나를 제외한 사람들에게 감
     socket
