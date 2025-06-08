@@ -13,15 +13,11 @@ import { ChatsService } from './chats.service';
 import { EnterChatDto } from './dto/enter-chat.dto';
 import { CreateMessageDto } from './messages/dto/create-message.dto';
 import { ChatMessagesService } from './messages/messages.service';
-import {
-  UseFilters,
-  UseGuards,
-  UsePipes,
-  ValidationPipe,
-} from '@nestjs/common';
+import { UseFilters, UsePipes, ValidationPipe } from '@nestjs/common';
 import { SocketCatchHttpExceptionFilter } from '../common/exception-filter/socket-catch-http.exception-filter';
-import { SocketBearerTokenGuard } from '../auth/guard/socket/socket-bearer-token.guard';
 import { UsersModel } from '../users/entities/users.entity';
+import { UsersService } from '../users/users.service';
+import { AuthService } from '../auth/auth.service';
 
 // 소켓io가 연결하게 되는 곳을 gateway라고 부름
 @WebSocketGateway({
@@ -32,14 +28,37 @@ export class ChatsGateway implements OnGatewayConnection {
   constructor(
     private readonly chatsService: ChatsService,
     private readonly messagesService: ChatMessagesService,
+    private readonly userService: UsersService,
+    private readonly authService: AuthService,
   ) {}
 
   // server 변수에 server 객체를 NestJS가 넣어줌
   @WebSocketServer()
   server: Server;
 
-  handleConnection(socket: Socket) {
+  async handleConnection(socket: Socket & { user: UsersModel }) {
     console.log(`on connect called : ${socket.id}`);
+
+    const headers = socket.handshake.headers;
+
+    // Bearer xxxxxx
+    const rawToken = headers['authorization'];
+
+    if (!rawToken) {
+      socket.disconnect();
+    }
+
+    try {
+      const token = this.authService.extractTokenFromHeader(rawToken, true);
+      const payload = this.authService.verifyToken(token);
+      const user = await this.userService.getUserByEmail(payload.email);
+
+      socket.user = user;
+
+      return true;
+    } catch (e) {
+      socket.disconnect();
+    }
   }
 
   // 챗 방을 만듦
@@ -58,7 +77,6 @@ export class ChatsGateway implements OnGatewayConnection {
     }),
   )
   @UseFilters(SocketCatchHttpExceptionFilter)
-  @UseGuards(SocketBearerTokenGuard)
   @SubscribeMessage('create_chat')
   async createChat(
     @MessageBody() data: CreateChatDto,
@@ -84,12 +102,11 @@ export class ChatsGateway implements OnGatewayConnection {
   )
   @UseFilters(SocketCatchHttpExceptionFilter)
   @SubscribeMessage('enter_chat')
-  @UseGuards(SocketBearerTokenGuard)
   async enterChat(
     // 방의 chat ID들을 리스트로 받음
     @MessageBody() data: EnterChatDto,
     // 이 소켓에 연결된 소켓을 들고옴
-    @ConnectedSocket() socket: Socket,
+    @ConnectedSocket() socket: Socket & { user: UsersModel },
   ) {
     for (const chatId of data.chatIds) {
       const exits = await this.chatsService.checkIfChatExists(chatId);
