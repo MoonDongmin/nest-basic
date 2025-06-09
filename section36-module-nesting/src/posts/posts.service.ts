@@ -9,9 +9,9 @@ import {
   MoreThan,
   QueryRunner,
   Repository,
-}                                    from 'typeorm';
-import { PostsModel }                from './entity/posts.entity';
-import { InjectRepository }          from '@nestjs/typeorm';
+} from 'typeorm';
+import { PostsModel } from './entity/posts.entity';
+import { InjectRepository } from '@nestjs/typeorm';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
 import { PaginatePostDto } from './dto/paginate-post.dto';
@@ -25,8 +25,8 @@ import {
   TEMP_FOLDER_PATH,
 } from '../common/const/path.const';
 import { promises } from 'fs';
-import { CreatePostImageDto }        from './image/dto/create-image.dto';
-import { ImageModel }                from './entity/image.entity';
+import { CreatePostImageDto } from './image/dto/create-image.dto';
+import { ImageModel } from './entity/image.entity';
 import { DEFAULT_POST_FIND_OPTIONS } from './const/default-post-find-options.const';
 
 /**
@@ -263,5 +263,13 @@ export class PostsService {
     await this.postsRepository.delete(postId);
 
     return postId;
+  }
+
+  async checkPostExistById(id: number) {
+    return this.postsRepository.exists({
+      where: {
+        id,
+      },
+    });
   }
 }

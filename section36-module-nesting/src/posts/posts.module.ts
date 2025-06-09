@@ -1,17 +1,12 @@
-import {
-  MiddlewareConsumer,
-  Module,
-  NestModule,
-  RequestMethod,
-} from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { PostsService } from './posts.service';
 import { PostsController } from './posts.controller';
-import { TypeOrmModule }     from '@nestjs/typeorm';
-import { PostsModel }        from './entity/posts.entity';
-import { AuthModule }        from '../auth/auth.module';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { PostsModel } from './entity/posts.entity';
+import { AuthModule } from '../auth/auth.module';
 import { UsersModule } from '../users/users.module';
-import { CommonModule }      from '../common/common.module';
-import { ImageModel }        from './entity/image.entity';
+import { CommonModule } from '../common/common.module';
+import { ImageModel } from './entity/image.entity';
 import { PostImagesService } from './image/images.service';
 
 @Module({
@@ -24,6 +19,7 @@ import { PostImagesService } from './image/images.service';
   ],
   controllers: [PostsController],
   providers: [PostsService, PostImagesService],
+  exports: [PostsService],
 })
 
 // 미들웨어 적용하기
