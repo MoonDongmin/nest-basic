@@ -1,4 +1,30 @@
 import { Injectable } from '@nestjs/common';
+import { PaginateCommentsDto } from './dto/paginate-comments.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { CommentsModel } from './entity/comments.entity';
+import { Repository } from 'typeorm';
+import { CommonService } from '../../common/common.service';
 
 @Injectable()
-export class CommentsService {}
+export class CommentsService {
+  constructor(
+    private readonly commonService: CommonService,
+    @InjectRepository(CommentsModel)
+    private readonly commentsRepository: Repository<CommentsModel>,
+  ) {}
+
+  paginateComments(dto: PaginateCommentsDto, postId: number) {
+    return this.commonService.paginate(
+      dto,
+      this.commentsRepository,
+      {
+        where: {
+          post: {
+            id: postId,
+          },
+        },
+      },
+      `posts/${postId}/comments`,
+    );
+  }
+}
