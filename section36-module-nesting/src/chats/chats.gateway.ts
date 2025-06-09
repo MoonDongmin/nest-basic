@@ -17,8 +17,8 @@ import { CreateMessageDto } from './messages/dto/create-message.dto';
 import { ChatMessagesService } from './messages/messages.service';
 import { UseFilters, UsePipes, ValidationPipe } from '@nestjs/common';
 import { SocketCatchHttpExceptionFilter } from '../common/exception-filter/socket-catch-http.exception-filter';
-import { UsersModel } from '../users/entities/users.entity';
-import { UsersService } from '../users/users.service';
+import { UsersModel }                     from '../users/entity/users.entity';
+import { UsersService }                   from '../users/users.service';
 import { AuthService } from '../auth/auth.service';
 
 // 소켓io가 연결하게 되는 곳을 gateway라고 부름

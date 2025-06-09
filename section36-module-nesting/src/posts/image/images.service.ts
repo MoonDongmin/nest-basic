@@ -1,6 +1,6 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { ImageModel } from '../entities/image.entity';
+import { InjectRepository }        from '@nestjs/typeorm';
+import { ImageModel }              from '../entity/image.entity';
 import { QueryRunner, Repository } from 'typeorm';
 import { basename, join } from 'path';
 import {

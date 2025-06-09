@@ -10,20 +10,21 @@ import { AppService } from './app.service';
 import { PostsModule } from './posts/posts.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import * as process from 'node:process';
-import { ConfigModule } from '@nestjs/config';
-import { PostsModel } from './posts/entities/posts.entity';
+import { ConfigModule }       from '@nestjs/config';
+import { PostsModel }         from './posts/entity/posts.entity';
 import { UsersModule } from './users/users.module';
-import { UsersModel } from './users/entities/users.entity';
-import { AuthModule } from './auth/auth.module';
+import { UsersModel }  from './users/entity/users.entity';
+import { AuthModule }  from './auth/auth.module';
 import { CommonModule } from './common/common.module';
 import { APP_INTERCEPTOR } from '@nestjs/core';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { PUBLIC_FOLDER_PATH } from './common/const/path.const';
-import { ImageModel } from './posts/entities/image.entity';
-import { LogMiddleware } from './common/middleware/log.middleware';
+import { ImageModel }         from './posts/entity/image.entity';
+import { LogMiddleware }      from './common/middleware/log.middleware';
 import { ChatsModule } from './chats/chats.module';
 import { ChatsModel } from './chats/entity/chats.entity';
-import { MessagesModel } from './chats/messages/entity/messages.entity';
+import { MessagesModel }  from './chats/messages/entity/messages.entity';
+import { CommentsModule } from './posts/comments/comments.module';
 
 @Module({
   imports: [
@@ -54,6 +55,7 @@ import { MessagesModel } from './chats/messages/entity/messages.entity';
     AuthModule,
     CommonModule,
     ChatsModule,
+    CommentsModule,
   ],
   controllers: [AppController],
   providers: [

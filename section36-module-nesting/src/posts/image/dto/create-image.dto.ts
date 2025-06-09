@@ -1,5 +1,5 @@
-import { PickType } from '@nestjs/mapped-types';
-import { ImageModel } from '../../entities/image.entity';
+import { PickType }   from '@nestjs/mapped-types';
+import { ImageModel } from '../../entity/image.entity';
 
 export class CreatePostImageDto extends PickType(ImageModel, [
   'path',
