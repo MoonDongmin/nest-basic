@@ -2,6 +2,8 @@ import {
   ConnectedSocket,
   MessageBody,
   OnGatewayConnection,
+  OnGatewayDisconnect,
+  OnGatewayInit,
   SubscribeMessage,
   WebSocketGateway,
   WebSocketServer,
@@ -24,7 +26,9 @@ import { AuthService } from '../auth/auth.service';
   // ws://localhost:3000/chats
   namespace: 'chats',
 })
-export class ChatsGateway implements OnGatewayConnection {
+export class ChatsGateway
+  implements OnGatewayConnection, OnGatewayInit, OnGatewayDisconnect
+{
   constructor(
     private readonly chatsService: ChatsService,
     private readonly messagesService: ChatMessagesService,
@@ -35,6 +39,18 @@ export class ChatsGateway implements OnGatewayConnection {
   // server 변수에 server 객체를 NestJS가 넣어줌
   @WebSocketServer()
   server: Server;
+
+  afterInit(server: any): any {
+    // OnGatewayInit으로 생기는 함수
+    // 실제 서버를 inject 받을 때 실행. gateway가 초기화됐을 때 실행됨
+    console.log(`after gateway init`);
+  }
+
+  handleDisconnect(socket: any): any {
+    // OnGatewayDisconnect로 생기는 함수
+    // 이를 실행하면 Gateway가 꺼질 때 실행이 됨
+    console.log(`On disconnect called: ${socket.id}`);
+  }
 
   async handleConnection(socket: Socket & { user: UsersModel }) {
     console.log(`on connect called : ${socket.id}`);
