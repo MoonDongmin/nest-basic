@@ -10,21 +10,22 @@ import { AppService } from './app.service';
 import { PostsModule } from './posts/posts.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import * as process from 'node:process';
-import { ConfigModule }       from '@nestjs/config';
-import { PostsModel }         from './posts/entity/posts.entity';
+import { ConfigModule } from '@nestjs/config';
+import { PostsModel } from './posts/entity/posts.entity';
 import { UsersModule } from './users/users.module';
-import { UsersModel }  from './users/entity/users.entity';
-import { AuthModule }  from './auth/auth.module';
+import { UsersModel } from './users/entity/users.entity';
+import { AuthModule } from './auth/auth.module';
 import { CommonModule } from './common/common.module';
 import { APP_INTERCEPTOR } from '@nestjs/core';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { PUBLIC_FOLDER_PATH } from './common/const/path.const';
-import { ImageModel }         from './posts/entity/image.entity';
-import { LogMiddleware }      from './common/middleware/log.middleware';
+import { ImageModel } from './posts/entity/image.entity';
+import { LogMiddleware } from './common/middleware/log.middleware';
 import { ChatsModule } from './chats/chats.module';
 import { ChatsModel } from './chats/entity/chats.entity';
-import { MessagesModel }  from './chats/messages/entity/messages.entity';
+import { MessagesModel } from './chats/messages/entity/messages.entity';
 import { CommentsModule } from './posts/comments/comments.module';
+import { CommentsModel } from './posts/comments/entity/comments.entity';
 
 @Module({
   imports: [
@@ -48,7 +49,14 @@ import { CommentsModule } from './posts/comments/comments.module';
       username: `${process.env.DB_USER}`,
       password: `${process.env.DB_PASS}`,
       database: `${process.env.DB_DB}`,
-      entities: [PostsModel, UsersModel, ImageModel, ChatsModel, MessagesModel],
+      entities: [
+        PostsModel,
+        UsersModel,
+        ImageModel,
+        ChatsModel,
+        MessagesModel,
+        CommentsModel,
+      ],
       synchronize: true,
     }),
     UsersModule,

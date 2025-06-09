@@ -1,9 +1,10 @@
 import { Column, Entity, ManyToOne, OneToMany } from 'typeorm';
-import { UsersModel }                           from '../../users/entity/users.entity';
-import { BaseModel }                            from '../../common/entity/base.entity';
+import { UsersModel } from '../../users/entity/users.entity';
+import { BaseModel } from '../../common/entity/base.entity';
 import { IsString } from 'class-validator';
 import { stringValidationMessage } from '../../common/validation-message/string-validation.message';
 import { ImageModel } from './image.entity';
+import { CommentsModel } from '../comments/entity/comments.entity';
 
 @Entity()
 export class PostsModel extends BaseModel {
@@ -35,4 +36,7 @@ export class PostsModel extends BaseModel {
 
   @OneToMany((type) => ImageModel, (image) => image.post)
   images: ImageModel[];
+
+  @OneToMany(() => CommentsModel, (comment) => comment.post)
+  comments: CommentsModel[];
 }
