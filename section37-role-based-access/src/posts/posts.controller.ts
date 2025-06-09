@@ -7,22 +7,24 @@ import {
   ParseIntPipe,
   Patch,
   Post,
+  Query,
   UseGuards,
   UseInterceptors,
-  Query,
 } from '@nestjs/common';
 import { PostsService } from './posts.service';
 import { AccessTokenGuard } from '../auth/guard/bearer-token.guard';
-import { User }          from '../users/decorator/user.decorator';
-import { UsersModel }    from '../users/entity/users.entity';
+import { User } from '../users/decorator/user.decorator';
+import { UsersModel } from '../users/entity/users.entity';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
-import { PaginatePostDto }               from './dto/paginate-post.dto';
-import { ImageModelType }                from './entity/image.entity';
+import { PaginatePostDto } from './dto/paginate-post.dto';
+import { ImageModelType } from './entity/image.entity';
 import { DataSource, QueryRunner as QR } from 'typeorm';
 import { PostImagesService } from './image/images.service';
 import { TransactionInterceptor } from '../common/interceptor/transaction.interceptor';
 import { QueryRunner } from 'src/common/decorator/query-runner.decorator';
+import { Roles } from '../users/decorator/roles.decorator';
+import { RolesEnum } from '../users/const/roles.const';
 
 @Controller('posts')
 export class PostsController {
@@ -97,7 +99,11 @@ export class PostsController {
   // 5) DELETE /posts/:id
   // id에 해당되는 POST를 삭제함
   @Delete(':id')
+  @UseGuards(AccessTokenGuard)
+  @Roles(RolesEnum.ADMIN)
   deletePost(@Param('id', ParseIntPipe) id: number) {
     return this.postsService.deletePost(id);
   }
+
+  // RBAC -> Role Based Access Control: 역할 기반 접근 제어
 }
