@@ -25,6 +25,7 @@ import { TransactionInterceptor } from '../common/interceptor/transaction.interc
 import { QueryRunner } from 'src/common/decorator/query-runner.decorator';
 import { Roles } from '../users/decorator/roles.decorator';
 import { RolesEnum } from '../users/const/roles.const';
+import { IsPublic } from '../common/decorator/is-public.decorator';
 
 @Controller('posts')
 export class PostsController {
@@ -37,6 +38,7 @@ export class PostsController {
   // 1) GET /posts
   // 모든 post를 다 가져옴
   @Get()
+  @IsPublic()
   // @UseInterceptors(LogInterceptor)
   // @UseFilters(HttpExceptionFilter)
   async getPosts(@Query() query: PaginatePostDto) {
@@ -54,6 +56,7 @@ export class PostsController {
   // id에 해당되는 post를 가져옴
   // 예를 들어서 id = 1일 경우 id가 1인 프로스트를 가져옴
   @Get(':id')
+  @IsPublic()
   async getPost(@Param('id', ParseIntPipe) id: number) {
     return this.postsService.getPostById(id);
   }
@@ -99,7 +102,6 @@ export class PostsController {
   // 5) DELETE /posts/:id
   // id에 해당되는 POST를 삭제함
   @Delete(':id')
-  @UseGuards(AccessTokenGuard)
   @Roles(RolesEnum.ADMIN)
   deletePost(@Param('id', ParseIntPipe) id: number) {
     return this.postsService.deletePost(id);
