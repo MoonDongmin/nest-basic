@@ -26,6 +26,7 @@ import { QueryRunner } from 'src/common/decorator/query-runner.decorator';
 import { Roles } from '../users/decorator/roles.decorator';
 import { RolesEnum } from '../users/const/roles.const';
 import { IsPublic } from '../common/decorator/is-public.decorator';
+import { IsPostMineOrAdmin } from './guard/is-post-mine-or-admin.guard';
 
 @Controller('posts')
 export class PostsController {
@@ -87,9 +88,10 @@ export class PostsController {
 
   // 4) Patch /posts/:id
   // id에 해당되는 POST를 변경함
-  @Patch(':id')
+  @Patch(':postId')
+  @UseGuards(IsPostMineOrAdmin)
   patchPost(
-    @Param('id', ParseIntPipe) id: number,
+    @Param('postId', ParseIntPipe) id: number,
     @Body() body: UpdatePostDto,
     // @Body('title') title?: string,
     // @Body('content') content?: string,
