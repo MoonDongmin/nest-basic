@@ -45,7 +45,7 @@ export class AuthController {
   @Post('login/email')
   @IsPublic()
   @UseGuards(BasicTokenGuard)
-  postLoginEmail(@Headers('authorization') rawToken: string, @Request() req) {
+  postLoginEmail(@Headers('authorization') rawToken: string) {
     // email:password -> Base64로 인코딩되어 있음
     const token = this.authService.extractTokenFromHeader(rawToken, false);
 

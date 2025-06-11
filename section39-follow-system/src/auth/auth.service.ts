@@ -1,9 +1,6 @@
-import {
-  Injectable,
-  UnauthorizedException,
-} from '@nestjs/common';
-import { JwtService }   from '@nestjs/jwt';
-import { UsersModel }   from '../users/entity/users.entity';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
+import { UsersModel } from '../users/entity/users.entity';
 import { UsersService } from '../users/users.service';
 import * as bcrypt from 'bcrypt';
 import { RegisterUserDto } from './dto/register-user.dto';
@@ -88,14 +85,19 @@ export class AuthService {
 
   // 토큰 검증
   verifyToken(token: string) {
-    return this.jwtService.verify(token, {
-      secret: this.configService.get<string>(ENV_JWT_SECRET_KEY),
-    });
+    try {
+      return this.jwtService.verify(token, {
+        secret: this.configService.get<string>(ENV_JWT_SECRET_KEY),
+      });
+    } catch (e) {
+      throw new UnauthorizedException('토큰이 만료됐거나 잘못된 토큰입니다.');
+    }
   }
 
   rotateToken(token: string, isRefreshToken: boolean) {
     const decoded = this.jwtService.verify(token, {
       secret: this.configService.get<string>(ENV_JWT_SECRET_KEY),
+      complete: true,
     });
 
     /*
@@ -175,22 +177,29 @@ export class AuthService {
   async authenticateWithEmailAndPassword(
     user: Pick<UsersModel, 'email' | 'password'>,
   ) {
+    /**
+     * 1. 사용자가 존재하는지 확인 (email)
+     * 2. 비밀번호가 맞는지 확인
+     * 3. 모두 통과되면 찾은 상용자 정보 반환
+     */
     const existingUser = await this.usersService.getUserByEmail(user.email);
 
     if (!existingUser) {
       throw new UnauthorizedException('존재하지 않는 사용자입니다.');
     }
 
-    /*
-     * bcrypt 사용법 - 파라미터
+    /**
+     * 파라미터
      *
      * 1) 입력된 비밀번호
-     * 2) 기존 해시(hash) -> 사용자 정보에 저장돼있는 hash
-     * */
+     * 2) 기존 해시 (hash) -> 사용자 정보에 저장돼있는 hash
+     */
     const passOk = await bcrypt.compare(user.password, existingUser.password);
+
     if (!passOk) {
-      throw new UnauthorizedException('비밀번호가 틀렸습다.');
+      throw new UnauthorizedException('비밀번호가 틀렸습니다.');
     }
+
     return existingUser;
   }
 
